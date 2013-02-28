@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>odata.js</id>
+    <version>1.0.0</version>
+    <authors>Kevin Preller, Steffen Scheuren</authors>
+    <owners>Kevin Preller</owners>
+    <projectUrl>https://github.com/kpko/OData.js</projectUrl>
+    <description>A small and easy to use library for creating OData queries.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>odata javascript js odata.js</tags>
+  </metadata>
+</package>
