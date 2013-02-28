@@ -40,6 +40,7 @@ describe 'odata', ->
 		it 'should allow multiple orderby statements as array', ->
 			url = odata.orderby(['FirstName desc', 'LastName', 'Age asc']).url()
 			expect(url).toBe('/Contacts?$orderby=FirstName desc,LastName,Age asc')
+
 		it 'should allow multiple orderby calls for multiple statements', ->
 			url = odata.orderby('FirstName desc')
 					.orderby('LastName')
@@ -65,3 +66,32 @@ describe 'odata', ->
 					.url()
 
 			expect(url).toBe('/Contacts?$skip=30$top=10$orderby=LastName,FirstName,Age desc')
+
+	describe 'filter', ->
+		###
+
+		Examples:
+
+		http://localhost:53211/owind.svc/Categories?$filter=startswith(CategoryName, 'Sea')
+		http://localhost:53211/owind.svc/Categories?$filter=(CategoryID add 4) eq 8
+		odata.filter('CategoryID').add(5).not().eq(25)
+		    .and('CategoryName').startswith('Bla')
+			.and('UnitPrice').mul('UnitsInStock').lt(45)
+			.or('IsItemSpecial').eq(true);
+
+		/Products?$filter=ID lt 7 and (Name eq 'Milk' or ID gt 3) or not(ID le 4 and ID ge 6)
+
+		odata.filterRaw("    ID lt 7 and (Name eq 'Milk' or ID gt 3) or not(ID le 4 and ID ge 6)    ");
+
+		odata.filter({
+			and: [
+				{ property: 'ID', operator: 'lt', val: 7 },
+				{ property: 'Name', operator: 'startwith', val: 'Ste' },
+				{ or: [
+					{ property: 'ID', operator: 'eq', val: 394 }
+				]}
+			]
+		});
+
+		###
+
