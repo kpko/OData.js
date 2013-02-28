@@ -37,6 +37,7 @@ describe 'odata', ->
 			.url()
 
 			expect(url).toBe('/Contacts?$orderby=FirstName desc,LastName,Age asc')
+
 		it 'should allow multiple orderby statements as array', ->
 			url = odata.orderby(['FirstName desc', 'LastName', 'Age asc']).url()
 			expect(url).toBe('/Contacts?$orderby=FirstName desc,LastName,Age asc')
@@ -65,7 +66,7 @@ describe 'odata', ->
 					.orderby('LastName', 'FirstName', 'Age desc')
 					.url()
 
-			expect(url).toBe('/Contacts?$skip=30$top=10$orderby=LastName,FirstName,Age desc')
+			expect(url).toBe('/Contacts?$skip=30&$top=10&$orderby=LastName,FirstName,Age desc')
 
 	describe 'filter', ->
 		###
@@ -83,15 +84,19 @@ describe 'odata', ->
 
 		odata.filterRaw("    ID lt 7 and (Name eq 'Milk' or ID gt 3) or not(ID le 4 and ID ge 6)    ");
 
-		odata.filter({
-			and: [
-				{ property: 'ID', operator: 'lt', val: 7 },
-				{ property: 'Name', operator: 'startwith', val: 'Ste' },
-				{ or: [
-					{ property: 'ID', operator: 'eq', val: 394 }
-				]}
-			]
-		});
-
 		###
+		it 'should add a filter entry to the statements', ->
+			odata.filter('something {0} {1}', 5, 10);
 
+			statements = odata.get_statements()
+			stmt = statements[0]
+
+			expect(stmt).toEqual({ type: 'filter', string: 'something 5 10' });
+
+		it 'can be filtered with a simple filter statement', ->
+			url = odata.filter("ID lt 7 and (ID lt 7 and (Name eq 'Milk' or ID gt 3) or not(ID le 4 and ID ge 6)").url();
+			expect(url).toBe('/Contacts?$filter=ID lt 7 and (ID lt 7 and (Name eq \'Milk\' or ID gt 3) or not(ID le 4 and ID ge 6)');
+
+		it 'should replace placeholder statements with arguments', ->
+			url = odata.filter("ID lt 7 and (ID lt {0} and (Name eq '{1}' or ID gt 3) or not(ID le 4 and ID ge 6)", 7, 'milk').url();
+			expect(url).toBe('/Contacts?$filter=ID lt 7 and (ID lt 7 and (Name eq \'milk\' or ID gt 3) or not(ID le 4 and ID ge 6)');
